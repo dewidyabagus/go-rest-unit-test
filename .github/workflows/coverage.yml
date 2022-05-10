@@ -17,3 +17,8 @@ jobs:
           go-version: '1.17'
       - name: Testing and Coverage Report
         run: go test -race -covermode=atomic -coverprofile=coverage.out
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.TOKEN_CODECOV }}
+          files: coverage.out
