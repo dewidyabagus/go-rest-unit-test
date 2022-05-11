@@ -1,5 +1,5 @@
 # Go REST API With Unit Testing
-REST API dengan penerapan unit testing pada masing-masing modul (domain)
+Simple REST API dengan penerapan unit testing pada bagian domain web adapter
 
 ---
 [![made-with-Go](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](http://golang.org)
@@ -9,7 +9,7 @@ REST API dengan penerapan unit testing pada masing-masing modul (domain)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=dewidyabagus_go-rest-unit-test&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=dewidyabagus_go-rest-unit-test)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=dewidyabagus_go-rest-unit-test&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=dewidyabagus_go-rest-unit-test)
 
-### Scan Code With Sonar Cloud
+### Scan Quality Code With Sonarcloud
 
 ---
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=dewidyabagus_go-rest-unit-test)
