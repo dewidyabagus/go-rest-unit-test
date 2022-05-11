@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -75,4 +76,91 @@ func TestGetWithEmail(t *testing.T) {
 	user := new(User)
 	json.Unmarshal(rec.Body.Bytes(), user)
 	assert.Equal(t, "Widya Ade Bagus", user.Name)
+}
+
+func TestGetAll(t *testing.T) {
+	e := echo.New()
+
+	handler := NewController()
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+
+	if assert.NoError(t, handler.GetAll(ctx)) {
+		assert.Equal(t, http.StatusOK, rec.Code)
+
+		user := new([]User)
+		json.Unmarshal(rec.Body.Bytes(), user)
+		assert.Equal(t, 1, len(*user))
+	}
+}
+
+func TestUpdateWithEmail(t *testing.T) {
+	e := echo.New()
+
+	handler := NewController()
+
+	testCases := []map[string]string{
+		{
+			"email":   "email@notfound.id",
+			"payload": `{"invalid"}`,
+			"code":    "400",
+		},
+		{
+			"email":   "email@notfound.id",
+			"payload": `{"email":"email@notfound.id","name":"name not found"}`,
+			"code":    "404",
+		},
+		{
+			"email":   email,
+			"payload": payload,
+			"code":    "200",
+		},
+	}
+	for _, testCase := range testCases {
+		req := httptest.NewRequest(http.MethodPut, "/", strings.NewReader(testCase["payload"]))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+
+		ctx := e.NewContext(req, rec)
+		ctx.SetPath("/:email")
+		ctx.SetParamNames("email")
+		ctx.SetParamValues(testCase["email"])
+
+		if assert.NoError(t, handler.UpdateWithEmail(ctx)) {
+			assert.Equal(t, testCase["code"], strconv.Itoa(rec.Code))
+		}
+	}
+}
+
+func TestDeleteWithEmail(t *testing.T) {
+	e := echo.New()
+
+	handler := NewController()
+
+	testCases := []map[string]string{
+		{
+			"email": "email@notfound.id",
+			"code":  "404",
+		},
+		{
+			"email": email,
+			"code":  "200",
+		},
+	}
+
+	for _, testCase := range testCases {
+		req := httptest.NewRequest(http.MethodDelete, "/", nil)
+		rec := httptest.NewRecorder()
+
+		ctx := e.NewContext(req, rec)
+		ctx.SetPath("/:email")
+		ctx.SetParamNames("email")
+		ctx.SetParamValues(testCase["email"])
+
+		if assert.NoError(t, handler.DeleteWithEmail(ctx)) {
+			assert.Equal(t, testCase["code"], strconv.Itoa(rec.Code))
+		}
+	}
 }
