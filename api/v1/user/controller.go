@@ -16,7 +16,13 @@ type (
 	}
 )
 
-var DB = map[string]*User{}
+var (
+	DB = map[string]*User{}
+
+	successResponse      = echo.Map{"message": "success"}
+	errInvalidBodyFormat = echo.Map{"message": "invalid body format"}
+	errUserNotFound      = echo.Map{"message": "user record not found"}
+)
 
 func NewController() *Controller {
 	return &Controller{}
@@ -26,7 +32,7 @@ func (c *Controller) NewUser(ctx echo.Context) error {
 	user := new(User)
 
 	if err := ctx.Bind(user); err != nil {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": "invalid body format"})
+		return ctx.JSON(http.StatusBadRequest, errInvalidBodyFormat)
 	}
 
 	if _, found := DB[user.Email]; found {
@@ -35,7 +41,7 @@ func (c *Controller) NewUser(ctx echo.Context) error {
 
 	DB[user.Email] = user
 
-	return ctx.JSON(http.StatusCreated, echo.Map{"message": "success"})
+	return ctx.JSON(http.StatusCreated, successResponse)
 }
 
 func (c *Controller) GetAll(ctx echo.Context) error {
@@ -53,7 +59,7 @@ func (c *Controller) GetWithEmail(ctx echo.Context) error {
 
 	user, found := DB[email]
 	if !found {
-		return ctx.JSON(http.StatusNotFound, echo.Map{"message": "user record not found"})
+		return ctx.JSON(http.StatusNotFound, errUserNotFound)
 	}
 
 	return ctx.JSON(http.StatusOK, user)
@@ -64,27 +70,27 @@ func (c *Controller) UpdateWithEmail(ctx echo.Context) error {
 	email := ctx.Param("email")
 
 	if err := ctx.Bind(user); err != nil {
-		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": "invalid body format"})
+		return ctx.JSON(http.StatusBadRequest, errInvalidBodyFormat)
 	}
 
 	if _, found := DB[email]; !found {
-		return ctx.JSON(http.StatusNotFound, echo.Map{"message": "user record not found"})
+		return ctx.JSON(http.StatusNotFound, errUserNotFound)
 	}
 
 	delete(DB, email)
 	DB[user.Email] = user
 
-	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
+	return ctx.JSON(http.StatusOK, successResponse)
 }
 
 func (c *Controller) DeleteWithEmail(ctx echo.Context) error {
 	email := ctx.Param("email")
 
 	if _, found := DB[email]; !found {
-		return ctx.JSON(http.StatusNotFound, echo.Map{"message": "user record not found"})
+		return ctx.JSON(http.StatusNotFound, errUserNotFound)
 	}
 
 	delete(DB, email)
 
-	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
+	return ctx.JSON(http.StatusOK, successResponse)
 }
