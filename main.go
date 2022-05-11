@@ -12,6 +12,7 @@ import (
 	echo "github.com/labstack/echo/v4"
 
 	"go-api-v1/api"
+	"go-api-v1/api/v1/user"
 	"go-api-v1/api/v1/welcome"
 )
 
@@ -24,6 +25,7 @@ func main() {
 
 	routes := &api.Routes{
 		Welcome: welcome.NewController(),
+		User:    user.NewController(),
 	}
 	api.RegisterRoutes(e, routes)
 
